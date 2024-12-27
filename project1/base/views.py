@@ -5,6 +5,9 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Task
 # Create your views here.
@@ -39,8 +42,11 @@ class TaskUpdate(UpdateView):
     success_url = reverse_lazy('tasks')
     template_name = 'base/task_form.html'
 
-class TaskDelete(DeleteView):
-    model = Task
+class TaskDelete(LoginRequiredMixin,DeleteView):
+    model=Task
     context_object_name = 'task'
-    success_url = reverse_lazy('tasks')
-    template_name = 'base/task_confirm_delete.html'
+    success_url=reverse_lazy('tasks')
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
